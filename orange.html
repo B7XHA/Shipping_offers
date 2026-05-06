@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>العروض المتاحة</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="content">
+        <h1 id="page-title">جاري تحميل العروض...</h1>
+        <div id="offers-container"></div>
+        <br>
+        <a href="index.html" style="color: #666; text-decoration: none;">← العودة للرئيسية</a>
+    </div>
+
+    <script>
+        // --- تعديل بسيط لكل صفحة ---
+        // في vodafone.html اجعلها 'Vodafone'
+        // في orange.html اجعلها 'Orange'
+        // في etisalat.html اجعلها 'Etisalat'
+        const folderName = 'Vodafone'; 
+
+        document.getElementById('page-title').innerText = `عروض ${folderName}`;
+        const container = document.getElementById('offers-container');
+
+        async function fetchOffers() {
+            let found = false;
+            // سيفحص أول 50 ملف، لو لم يجد رقم 2 سيتخطاه لـ 3
+            for (let i = 1; i <= 50; i++) {
+                try {
+                    const resp = await fetch(`${folderName}/offer${i}.txt`);
+                    if (resp.ok) {
+                        const data = await resp.text();
+                        displayOffer(data);
+                        found = true;
+                    }
+                } catch (err) { continue; }
+            }
+            if (!found) container.innerHTML = "<p>لا يوجد عروض حالياً.</p>";
+        }
+
+        function displayOffer(text) {
+            const div = document.createElement('div');
+            div.className = 'offer-box';
+            // تحويل ***نص*** إلى عنوان كبير وفي المنتصف
+            let html = text.replace(/\*\*\*(.*?)\*\*\*/g, '<span class="offer-title">$1</span>');
+            // تحويل السطور لبريك
+            div.innerHTML = html.replace(/\n/g, '<br>');
+            container.appendChild(div);
+        }
+
+        fetchOffers();
+    </script>
+</body>
+</html>
+
