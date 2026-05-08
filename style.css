@@ -10,7 +10,7 @@ body {
 .main-title {
     color: #2c3e50;
     margin-bottom: 30px;
-    font-weight: 900; /* خط عريض للعنوان */
+    font-weight: 500; /* خط عريض للعنوان */
     font-size: 2.5rem;
 }
 
