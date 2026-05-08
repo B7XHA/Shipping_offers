@@ -27,7 +27,7 @@
         async function fetchOffers() {
             let found = false;
             // سيفحص أول 50 ملف، لو لم يجد رقم 2 سيتخطاه لـ 3
-            for (let i = 1; i <= 50; i++) {
+            for (let i = 1; i <= 500; i++) {
                 try {
                     const resp = await fetch(`${folderName}/offer${i}.txt`);
                     if (resp.ok) {
