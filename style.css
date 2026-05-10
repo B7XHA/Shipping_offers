@@ -11,7 +11,7 @@ body {
     color: #2c3e50;
     margin-bottom: 30px;
     font-weight: 500; /* خط عريض للعنوان */
-    font-size: 2.5rem;
+    font-size: 1.5rem;
 }
 
 .container { max-width: 700px; margin: auto; }
