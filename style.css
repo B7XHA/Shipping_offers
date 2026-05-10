@@ -69,3 +69,66 @@ body {
     display: block;
     margin: 10px 0;
 }
+/* تنسيق كروت الأقسام لتشبه الرئيسية */
+.category-card {
+    background: #fff;
+    padding: 25px;
+    margin: 10px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 20px;
+    font-weight: bold;
+    color: #2c3e50;
+    border: 1px solid #eee;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    border-color: #ff4b2b;
+}
+
+/* القائمة السفلية بشكل مودرن */
+.bottom-sheet {
+    position: fixed;
+    bottom: -100%;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    padding: 25px;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    box-shadow: 0 -10px 25px rgba(0,0,0,0.15);
+    transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    text-align: center;
+}
+
+.bottom-sheet.active { bottom: 0; }
+
+.sheet-bar {
+    width: 50px;
+    height: 5px;
+    background: #ddd;
+    border-radius: 10px;
+    margin: 0 auto 20px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    background: #f8f9fa;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 15px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.contact-item:hover { background: #e9ecef; }
+.contact-item img { width: 30px; }
