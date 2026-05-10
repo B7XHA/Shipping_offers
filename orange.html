@@ -3,130 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة العروض والخدمات</title>
-    <!-- استدعاء خط Cairo للشياكة -->
+    <title>بوابة الخدمات</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="content">
-        <h1 id="page-title" class="main-title">جاري تحميل الأقسام...</h1>
-        
-        <div id="main-container">
-            <!-- هنا ستظهر الأقسام والعروض تلقائياً -->
-        </div>
+    <h1 id="view-title" class="main-title">الأقسام المتاحة</h1>
+    
+    <!-- حاوية الأقسام (تظهر أولاً) -->
+    <div id="categories-container" class="container"></div>
 
-        <br>
-        <a href="index.html" class="back-btn">← العودة للرئيسية</a>
+    <!-- حاوية العروض (تكون مخفية وتظهر عند اختيار قسم) -->
+    <div id="offers-container" class="container" style="display: none;"></div>
+
+    <div style="text-align:center; margin-top:20px;">
+        <a href="index.html" id="back-link" class="back-btn">← العودة للرئيسية</a>
     </div>
 
-    <!-- القائمة السفلية (Bottom Sheet) -->
+    <!-- القائمة السفلية الاحترافية -->
     <div class="overlay" id="overlay" onclick="closeSheet()"></div>
     <div class="bottom-sheet" id="bottomSheet">
-        <div class="sheet-header">
-            <h3>اطلب العرض الآن عبر:</h3>
-        </div>
-        <div class="contact-options">
+        <div class="sheet-bar"></div>
+        <h3 style="margin-bottom:20px;">اختر وسيلة التواصل للطلب</h3>
+        
+        <div class="contact-list">
             <a href="#" id="wa1" class="contact-item">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
-                <span>واتساب 1</span>
+                <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png">
+                <span>واتساب المبيعات (1)</span>
             </a>
             <a href="#" id="wa2" class="contact-item">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
-                <span>واتساب 2</span>
+                <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png">
+                <span>واتساب المبيعات (2)</span>
             </a>
             <a href="#" id="tg" class="contact-item">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram">
-                <span>تليجرام</span>
+                <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png">
+                <span>قناة التليجرام الرسمية</span>
             </a>
         </div>
-        <button class="close-btn" onclick="closeSheet()">إلغاء</button>
+        <button onclick="closeSheet()" style="margin-top:15px; background:none; border:none; color:red; font-weight:bold; cursor:pointer;">إغلاق القائمة</button>
     </div>
 
     <script>
-        // --- الإعدادات الأساسية ---
-        // في كل صفحة غير هذا الاسم (Orange, Vodafone, Etisalat)
-        const folderName = 'Orange'; 
-        
-        const container = document.getElementById('main-container');
-        document.getElementById('page-title').innerText = `عروض شركة ${folderName}`;
+        const folderName = 'Orange'; // اسم المجلد الأساسي
+        const catContainer = document.getElementById('categories-container');
+        const offContainer = document.getElementById('offers-container');
+        const viewTitle = document.getElementById('view-title');
 
-        async function loadEverything() {
+        async function init() {
             try {
-                // 1. قراءة ملف اقسام.txt لمعرفة المجلدات الفرعية
-                const response = await fetch(`${folderName}/اقسام.txt`);
-                if (!response.ok) {
-                    container.innerHTML = `<p class="error-msg">تأكد من إنشاء ملف "اقسام.txt" داخل مجلد ${folderName}</p>`;
-                    return;
-                }
-                
-                const content = await response.text();
-                // تنظيف الأسماء من المسافات الزائدة
+                const resp = await fetch(`${folderName}/اقسام.txt`);
+                const content = await resp.text();
                 const categories = content.split('\n').map(c => c.trim()).filter(c => c.length > 0);
 
-                if (categories.length === 0) {
-                    container.innerHTML = "<p>لا توجد أقسام مضافة في ملف اقسام.txt</p>";
-                    return;
-                }
-
-                // 2. الدخول لكل مجلد قسم وجلب ملفات offer1, offer2...
-                for (let cat of categories) {
-                    // إنشاء عنوان للقسم
-                    const catHeader = document.createElement('h2');
-                    catHeader.className = 'category-title';
-                    catHeader.innerText = cat;
-                    container.appendChild(catHeader);
-
-                    const catDiv = document.createElement('div');
-                    catDiv.className = 'category-section';
-                    container.appendChild(catDiv);
-
-                    // فحص أول 30 ملف في القسم (ممكن تزود الرقم)
-                    for (let i = 1; i <= 30; i++) {
-                        try {
-                            const resp = await fetch(`${folderName}/${cat}/offer${i}.txt`);
-                            if (resp.ok) {
-                                const text = await resp.text();
-                                renderOffer(text, catDiv);
-                            }
-                        } catch (e) { continue; }
-                    }
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                container.innerHTML = "<p>حدث خطأ أثناء تحميل البيانات، تأكد من رفع الملفات بشكل صحيح.</p>";
+                categories.forEach(cat => {
+                    const card = document.createElement('div');
+                    card.className = 'category-card';
+                    card.innerText = cat;
+                    card.onclick = () => loadOffers(cat);
+                    catContainer.appendChild(card);
+                });
+            } catch (e) {
+                catContainer.innerHTML = "تأكد من وجود ملف اقسام.txt";
             }
         }
 
-        function renderOffer(text, parentDiv) {
+        async function loadOffers(catName) {
+            catContainer.style.display = 'none';
+            offContainer.style.display = 'block';
+            offContainer.innerHTML = '';
+            viewTitle.innerText = `عروض ${catName}`;
+            
+            // تغيير رابط العودة ليقوم بالرجوع للأقسام بدلاً من الرئيسية
+            const backLink = document.getElementById('back-link');
+            backLink.innerText = "← العودة للأقسام";
+            backLink.href = "javascript:location.reload()";
+
+            let found = false;
+            for (let i = 1; i <= 30; i++) {
+                try {
+                    const resp = await fetch(`${folderName}/${catName}/offer${i}.txt`);
+                    if (resp.ok) {
+                        const text = await resp.text();
+                        renderOfferCard(text);
+                        found = true;
+                    }
+                } catch (e) { continue; }
+            }
+            if(!found) offContainer.innerHTML = "<p>لا توجد عروض في هذا القسم.</p>";
+        }
+
+        function renderOfferCard(text) {
             const div = document.createElement('div');
             div.className = 'offer-box';
             
-            // استخراج رسالة الواتساب من بين ~~
             const match = text.match(/~~(.*?)~~/);
-            const orderMsg = match ? match[1] : "طلب خدمة";
+            const msg = match ? match[1] : "طلب خدمة";
             
-            // معالجة النصوص (العنوان والحذف)
-            let htmlContent = text.replace(/\*\*\*(.*?)\*\*\*/g, '<span class="offer-title">$1</span>')
-                                  .replace(/~~(.*?)~~/g, '') // إخفاء كود الرسالة
-                                  .replace(/\n/g, '<br>');
+            let html = text.replace(/\*\*\*(.*?)\*\*\*/g, '<span class="offer-title">$1</span>')
+                           .replace(/~~(.*?)~~/g, '')
+                           .replace(/\n/g, '<br>');
 
-            div.innerHTML = htmlContent;
-            
-            // عند الضغط يفتح القائمة السفلية
-            div.onclick = () => openSheet(orderMsg);
-            parentDiv.appendChild(div);
+            div.innerHTML = html;
+            div.onclick = () => openSheet(msg);
+            offContainer.appendChild(div);
         }
 
-        // وظائف القائمة السفلية
         function openSheet(msg) {
-            const encodedMsg = encodeURIComponent("سلام عليكم، محتاج: " + msg);
-            
-            // تحديث الروابط بالأرقام واليوزر اللي طلبتهم
-            document.getElementById('wa1').href = `https://wa.me/201070339762?text=${encodedMsg}`;
-            document.getElementById('wa2').href = `https://wa.me/201153787930?text=${encodedMsg}`;
-            document.getElementById('tg').href = `https://t.me/X_Ha7mo_X?text=${encodedMsg}`;
+            const eMsg = encodeURIComponent("أريد: " + msg);
+            document.getElementById('wa1').href = `https://wa.me/201070339762?text=${eMsg}`;
+            document.getElementById('wa2').href = `https://wa.me/201153787930?text=${eMsg}`;
+            document.getElementById('tg').href = `https://t.me/X_Ha7mo_X?text=${eMsg}`;
             
             document.getElementById('bottomSheet').classList.add('active');
             document.getElementById('overlay').style.display = 'block';
@@ -137,8 +124,7 @@
             document.getElementById('overlay').style.display = 'none';
         }
 
-        // بدء التحميل
-        loadEverything();
+        init();
     </script>
 </body>
 </html>
